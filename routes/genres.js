@@ -1,34 +1,24 @@
+// import models
+const { Genre, validateGenre } = require("../models/genre");
+
 const { Router } = require("express");
 const router = Router();
-
-const genres = [
-  { id: 1, name: "Action" },
-  { id: 2, name: "Animation" },
-  { id: 3, name: "Mystery" },
-];
 
 // Response statuses
 // 200 = Ok
 // 400 = Bad Request
 // 404 = Not found
 
-// Helper functions
-const validateGenre = (genre) => {
-  const schema = {
-    name: Joi.string().min(3).required(),
-  };
-
-  return Joi.validate(genre, schema);
-};
-
 // Retrieve information
 
-router.get("/", (req, res) => {
-  return res.send(genres);
+router.get("/", async (req, res) => {
+  const result = await Genre.find().sort("name");
+  return res.send(result);
 });
 
-router.get("/:id", (req, res) => {
-  const genre = genres.find((g) => g.id === parseInt(req.params.id));
+// Single document
+router.get("/:id", async (req, res) => {
+  const genre = await Genre.findById(req.params.id);
   if (!genre) {
     return res.status(404).send("The genre was not found with the given ID");
   }
@@ -42,49 +32,52 @@ router.get("/:year/:director", (req, res) => {
 });
 
 // Register information
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   // Validate user input
   const { error } = validateGenre(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
 
-  const genre = {
-    id: genres.length + 1,
+  let genre = new Genre({
     name: req.body.name,
-  };
+  });
 
-  genres.push(genre);
+  genre = await genre.save();
   return res.send(genre);
 });
 
 // Update information
-router.put("/:id", (req, res) => {
-  // Check if the id info does exist
-  const genre = genres.find((g) => g.id === parseInt(req.params.id));
-  if (!genre) {
-    return res.status(404).send("The genre was not found with the given ID");
-  }
+router.put("/:id", async (req, res) => {
   // Validate user input
   const { error } = validateGenre(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  // Update the information
-  genre.name = req.body.name;
-  return res.send(genre);
-});
-
-// Delete an information
-router.delete("/:id", (req, res) => {
   // Check if the id info does exist
-  const genre = genres.find((g) => g.id === parseInt(req.params.id));
+  const genre = await Genre.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+    },
+    { new: true }
+  );
+
   if (!genre) {
     return res.status(404).send("The genre was not found with the given ID");
   }
 
-  const index = genres.indexOf(genre);
-  genres.splice(index, 1);
+  // Update the information
+  return res.send(genre);
+});
+
+// Delete an information
+router.delete("/:id", async (req, res) => {
+  // Check if the id info does exist
+  const genre = await Genre.findByIDAndRemove(req.params.id);
+  if (!genre) {
+    return res.status(404).send("The genre was not found with the given ID");
+  }
 
   return res.send(genre);
 });
