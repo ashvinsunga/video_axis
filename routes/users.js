@@ -1,8 +1,10 @@
+// Tips: use 'joi-password-complexity' to implement password complexity
+
 // import models
 const { User, validateUser } = require('../models/user');
-const mongoose = require('mongoose');
 const { Router } = require('express');
 const router = Router();
+const lodash = require('lodash');
 
 router.get('/', async (req, res) => {
   const result = await User.find().sort('name');
@@ -18,14 +20,11 @@ router.post('/', async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(400).send('User already registered.');
 
-  user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
+  user = new User(lodash.pick(req.body, ['name', 'email', 'password']));
 
   user = await user.save();
-  return res.send(user);
+
+  return res.send(lodash.pick(user, ['_id', 'name', 'email']));
 });
 
 // Update information
