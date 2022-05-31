@@ -6,8 +6,6 @@ const { Router } = require('express');
 const router = Router();
 const lodash = require('lodash');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const config = require('config');
 
 router.get('/', async (req, res) => {
   const result = await User.find().sort('name');
@@ -28,7 +26,8 @@ router.post('/', async (req, res) => {
   user.password = await bcrypt.hash(user.password, salt);
   user = await user.save();
 
-  const token = jwt.sign({ _id: user._id }, config.get('jwtPrivateKey'));
+  // IEP - Information Expert Principle
+  const token = user.generateAuthToken();
   return res
     .header('x-auth-token', token)
     .send(lodash.pick(user, ['_id', 'name', 'email']));

@@ -6,11 +6,8 @@ const { User } = require('../models/user');
 // import third party modules
 const { Router } = require('express');
 const router = Router();
-const lodash = require('lodash');
 const Joi = require('joi');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const config = require('config');
 
 router.get('/', async (req, res) => {
   const result = await User.find().sort('name');
@@ -30,7 +27,8 @@ router.post('/', async (req, res) => {
   const validPassword = await bcrypt.compare(req.body.password, user.password);
   if (!validPassword) return res.status(400).send('Invalid email or password.');
 
-  const token = jwt.sign({ _id: user._id }, config.get('jwtPrivateKey'));
+  // IEP - Information Expert Principle
+  const token = user.generateAuthToken();
   res.send(token);
 });
 
