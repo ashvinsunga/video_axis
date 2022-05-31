@@ -4,7 +4,6 @@ const { Movie } = require('../models/movie');
 const { Customer } = require('../models/customer');
 const { Router } = require('express');
 const router = Router();
-const mongoose = require('mongoose');
 const Fawn = require('fawn');
 
 Fawn.init('mongodb://localhost:27017/video_axis');
