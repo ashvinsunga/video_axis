@@ -1,7 +1,7 @@
 // import models
-const { Customer, validateCustomer } = require("../models/customer");
+const { Customer, validateCustomer } = require('../models/customer');
 
-const { Router } = require("express");
+const { Router } = require('express');
 const router = Router();
 
 // Response statuses
@@ -11,47 +11,47 @@ const router = Router();
 
 // Retrieve information
 
-router.get("/", async (req, res) => {
-  const result = await Customer.find().sort("name");
+router.get('/', async (req, res) => {
+  const result = await Customer.find().sort('name');
   return res.send(result);
 });
 
 // Single document
-router.get("/:id", async (req, res) => {
-  const Customer = await Customer.findById(req.params.id);
-  if (!Customer) {
-    return res.status(404).send("The Customer was not found with the given ID");
+router.get('/:id', async (req, res) => {
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) {
+    return res.status(404).send('The Customer was not found with the given ID');
   }
-  return res.send(Customer);
+  return res.send(customer);
 });
 
 // Register information
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   // Validate user input
   const { error } = validateCustomer(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
 
-  let Customer = new Customer({
+  let customer = new Customer({
     name: req.body.name,
     isGold: req.body.isGold,
     phone: req.body.phone,
   });
 
-  Customer = await Customer.save();
-  return res.send(Customer);
+  customer = await customer.save();
+  return res.send(customer);
 });
 
 // Update information
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
   // Validate user input
   const { error } = validateCustomer(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
   // Check if the id info does exist
-  const Customer = await Customer.findByIdAndUpdate(
+  const customer = await Customer.findByIdAndUpdate(
     req.params.id,
     {
       name: req.body.name,
@@ -61,23 +61,23 @@ router.put("/:id", async (req, res) => {
     { new: true }
   );
 
-  if (!Customer) {
-    return res.status(404).send("The Customer was not found with the given ID");
+  if (!customer) {
+    return res.status(404).send('The Customer was not found with the given ID');
   }
 
   // Update the information
-  return res.send(Customer);
+  return res.send(customer);
 });
 
 // Delete an information
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   // Check if the id info does exist
-  const Customer = await Customer.findByIDAndRemove(req.params.id);
-  if (!Customer) {
-    return res.status(404).send("The Customer was not found with the given ID");
+  const customer = await Customer.findByIDAndRemove(req.params.id);
+  if (!customer) {
+    return res.status(404).send('The Customer was not found with the given ID');
   }
 
-  return res.send(Customer);
+  return res.send(customer);
 });
 
 module.exports = router;
