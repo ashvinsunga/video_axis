@@ -5,6 +5,7 @@ const { Router } = require('express');
 const router = Router();
 // import middleware
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 // Response statuses
 // 200 = Ok
@@ -75,7 +76,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete an information
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [auth, admin], async (req, res) => {
   // Check if the id info does exist
   const genre = await Genre.findByIDAndRemove(req.params.id);
   if (!genre) {

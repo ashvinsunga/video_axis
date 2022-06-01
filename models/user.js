@@ -23,12 +23,21 @@ const userSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 1024,
   },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+  // roles: [],  sample implemetation of authorization
+  // operations: []
 });
 
 // Implementing IEP (Information Expert Principle) and adding the generating of jwt on userSchema
 // you can't use arrow function don't have their own 'this', so don't use it for creating methods
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, config.get('jwtPrivateKey'));
+  const token = jwt.sign(
+    { _id: this._id, isAdmin: this.isAdmin },
+    config.get('jwtPrivateKey')
+  );
   return token;
 };
 
