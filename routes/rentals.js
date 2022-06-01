@@ -5,6 +5,8 @@ const { Customer } = require('../models/customer');
 const { Router } = require('express');
 const router = Router();
 const Fawn = require('fawn');
+//
+const auth = require('../middleware/auth');
 
 Fawn.init('mongodb://localhost:27017/video_axis');
 // Fawn.init(mongoose);
@@ -20,7 +22,7 @@ router.get('/', async (req, res) => {
 });
 
 // Register information
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   // Validate user input
   const { error } = validateRental(req.body);
   if (error) return res.status(400).send(error.details[0].message);

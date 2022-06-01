@@ -6,6 +6,8 @@ const { Router } = require('express');
 const router = Router();
 const lodash = require('lodash');
 const bcrypt = require('bcrypt');
+//
+const auth = require('../middleware/auth');
 
 router.get('/', async (req, res) => {
   const result = await User.find().sort('name');
@@ -13,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Register information
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   // Validate user input
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);

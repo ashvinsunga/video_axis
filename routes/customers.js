@@ -3,6 +3,8 @@ const { Customer, validateCustomer } = require('../models/customer');
 
 const { Router } = require('express');
 const router = Router();
+//
+const auth = require('../middleware/auth');
 
 // Response statuses
 // 200 = Ok
@@ -26,7 +28,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Register information
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   // Validate user input
   const { error } = validateCustomer(req.body);
   if (error) {
@@ -44,7 +46,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update information
-router.put('/:id', async (req, res) => {
+router.put('/:id',auth,  async (req, res) => {
   // Validate user input
   const { error } = validateCustomer(req.body);
   if (error) {

@@ -3,6 +3,8 @@ const { Movie, validateMovie } = require('../models/movie');
 const { Genre } = require('../models/genre');
 const { Router } = require('express');
 const router = Router();
+//
+const auth = require('../middleware/auth');
 
 // Response statuses
 // 200 = Ok
@@ -18,7 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 // Register information
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   // Validate user input
   const { error } = validateMovie(req.body);
   if (error) {
