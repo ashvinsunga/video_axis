@@ -2,6 +2,7 @@
 
 // import models
 const { User, validateUser } = require('../models/user');
+//
 const { Router } = require('express');
 const router = Router();
 const lodash = require('lodash');
@@ -9,9 +10,9 @@ const bcrypt = require('bcrypt');
 //
 const auth = require('../middleware/auth');
 
-router.get('/', async (req, res) => {
-  const result = await User.find().sort('name');
-  return res.send(result);
+router.get('/me', auth, async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password');
+  return res.send(user);
 });
 
 // Register information
