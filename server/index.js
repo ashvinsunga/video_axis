@@ -15,6 +15,9 @@ const express = require('express');
 const app = express();
 const config = require('config');
 
+// import own middleware
+const error = require('./middleware/error');
+
 // check if the mentioned environment variables is present
 if (!config.get('jwtPrivateKey')) {
   console.error('FATAL ERROR: jwtPrivateKey is not defined.');
@@ -37,6 +40,7 @@ app.use('/api/movies', movies);
 app.use('/api/rentals', rentals);
 app.use('/api/users', users);
 app.use('/api/auth', auth);
+app.use(error);
 
 // SET using 'set PORT=4000'
 const port = process.env.PORT || 3000;

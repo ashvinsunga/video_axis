@@ -4,7 +4,7 @@ const config = require('config');
 // middleware is usually used to avoid redundancy of function usage
 // middlware always has 'next' as an argument
 
-const auth = (req, res, next) => {
+module.exports = (req, res, next) => {
   const token = req.header('x-auth-token');
   if (!token) return res.status(401).send('Access denied. No token provided');
 
@@ -16,5 +16,3 @@ const auth = (req, res, next) => {
     res.status(400).send('Invalid token.');
   }
 };
-
-module.exports = auth;

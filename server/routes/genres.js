@@ -6,6 +6,7 @@ const router = Router();
 // import middleware
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const asyncMiddleware = require('../middleware/async');
 
 // Response statuses
 // 200 = Ok
@@ -14,10 +15,14 @@ const admin = require('../middleware/admin');
 // 404 = Not found
 
 // Retrieve information
-router.get('/', async (req, res) => {
-  const result = await Genre.find().sort('name');
-  return res.send(result);
-});
+
+router.get(
+  '/',
+  asyncMiddleware(async (req, res) => {
+    const genres = await Genre.find().sort('name');
+    return res.send(genres);
+  })
+);
 
 // Single document
 router.get('/:id', async (req, res) => {
