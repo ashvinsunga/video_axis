@@ -1,30 +1,31 @@
 // Tips: use 'joi-password-complexity' to implement password complexity
 
 // import models
-const { User, validateUser } = require('../models/user');
+const { User, validateUser } = require("../models/user");
 //
-const { Router } = require('express');
+const { Router } = require("express");
 const router = Router();
-const lodash = require('lodash');
-const bcrypt = require('bcrypt');
+const lodash = require("lodash");
+const bcrypt = require("bcrypt");
 //
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 
-router.get('/me', auth, async (req, res) => {
-  const user = await User.findById(req.user._id).select('-password');
+router.get("/me", auth, async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
   return res.send(user);
 });
 
 // Register information
-router.post('/', auth, async (req, res) => {
+router.post("/", async (req, res) => {
   // Validate user input
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   let user = await User.findOne({ email: req.body.email });
-  if (user) return res.status(400).send('User already registered.');
+  if (user) return res.status(400).send("User already registered.");
 
-  user = new User(lodash.pick(req.body, ['name', 'email', 'password']));
+  user = new User(lodash.pick(req.body, ["name", "email", "password"]));
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
   user = await user.save();
@@ -32,12 +33,13 @@ router.post('/', auth, async (req, res) => {
   // IEP - Information Expert Principle
   const token = user.generateAuthToken();
   return res
-    .header('x-auth-token', token)
-    .send(lodash.pick(user, ['_id', 'name', 'email']));
+    .header("x-auth-token", token)
+    .header("access-control-expose-headers", "x-auth-token")
+    .send(lodash.pick(user, ["_id", "name", "email"]));
 });
 
 // Update information
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   // Validate user input
   const { error } = validateUser(req.body);
   if (error) {
@@ -53,7 +55,7 @@ router.put('/:id', async (req, res) => {
   );
 
   if (!user) {
-    return res.status(404).send('The user was not found with the given ID');
+    return res.status(404).send("The user was not found with the given ID");
   }
 
   // Update the information
@@ -61,11 +63,11 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete an information
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   // Check if the id info does exist
   const user = await User.findByIDAndRemove(req.params.id);
   if (!user) {
-    return res.status(404).send('The user was not found with the given ID');
+    return res.status(404).send("The user was not found with the given ID");
   }
 
   return res.send(user);

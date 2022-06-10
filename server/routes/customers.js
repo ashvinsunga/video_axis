@@ -5,7 +5,7 @@ const { Router } = require('express');
 const router = Router();
 //
 const auth = require('../middleware/auth');
-
+const admin = require('../middleware/admin');
 // Response statuses
 // 200 = Ok
 // 400 = Bad Request
@@ -72,7 +72,7 @@ router.put('/:id',auth,  async (req, res) => {
 });
 
 // Delete an information
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [auth, admin],async (req, res) => {
   // Check if the id info does exist
   const customer = await Customer.findByIDAndRemove(req.params.id);
   if (!customer) {

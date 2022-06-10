@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Table from "./common/table";
 import Like from "./common/like";
-// import auth from "../services/authService";
+import auth from "../services/authService";
 
 class MoviesTable extends Component {
   columns = [
@@ -23,7 +23,6 @@ class MoviesTable extends Component {
       ),
     },
   ];
-
   deleteColumn = {
     key: "delete",
     content: (movie) => (
@@ -36,11 +35,11 @@ class MoviesTable extends Component {
     ),
   };
 
-  //   constructor() {
-  //     super();
-  //     const user = auth.getCurrentUser();
-  //     if (user && user.isAdmin) this.columns.push(this.deleteColumn);
-  //   }
+  constructor() {
+    super();
+    const user = auth.getCurrentUser();
+    if (user && user.isAdmin) this.columns.push(this.deleteColumn);
+  }
 
   render() {
     const { movies, onSort, sortColumn } = this.props;

@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const Joi = require('joi');
-const jwt = require('jsonwebtoken');
-const config = require('config');
+const mongoose = require("mongoose");
+const Joi = require("joi");
+const jwt = require("jsonwebtoken");
+const config = require("config");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -35,13 +35,18 @@ const userSchema = new mongoose.Schema({
 // you can't use arrow function don't have their own 'this', so don't use it for creating methods
 userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign(
-    { _id: this._id, isAdmin: this.isAdmin },
-    config.get('jwtPrivateKey')
+    {
+      _id: this._id,
+      name: this.name,
+      email: this.email,
+      isAdmin: this.isAdmin,
+    },
+    config.get("jwtPrivateKey")
   );
   return token;
 };
 
-const User = new mongoose.model('User', userSchema);
+const User = new mongoose.model("User", userSchema);
 
 // Helper functions
 const validateUser = (user) => {

@@ -1,6 +1,6 @@
-// import http from "./httpService";
-// import { apiUrl } from "../config.json";
+import http from "./httpService";
+import config from "../config.json";
 
-// export function getGenres() {
-//   return http.get(apiUrl + "/genres");
-// }
+export function getGenres() {
+  return http.get(config.apiUrl + "/genres");
+}
